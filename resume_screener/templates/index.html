@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ResumeIQ — AI Resume Screener</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── Background Grid ── -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <!-- ── Header ── -->
+  <header class="site-header">
+    <div class="logo">
+      <span class="logo-icon">⬡</span>
+      <span class="logo-text">Resume<strong>IQ</strong></span>
+    </div>
+    <p class="tagline">AI-powered candidate screening in seconds</p>
+  </header>
+
+  <!-- ── Main ── -->
+  <main class="container">
+
+    <!-- Left Panel: Inputs -->
+    <section class="panel panel-input" id="inputPanel">
+
+      <!-- Step 1: Upload -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">01</span> Upload Resumes</div>
+        <div class="drop-zone" id="dropZone">
+          <input type="file" id="resumeInput" multiple accept=".pdf" hidden />
+          <div class="drop-icon">📄</div>
+          <p class="drop-primary">Drop PDFs here or <button class="inline-btn" onclick="document.getElementById('resumeInput').click()">browse</button></p>
+          <p class="drop-sub">Multiple files supported · PDF only · Max 16 MB each</p>
+        </div>
+        <ul class="file-list" id="fileList"></ul>
+      </div>
+
+      <!-- Step 2: Job Description -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">02</span> Job Description</div>
+        <textarea
+          id="jobDesc"
+          class="jd-textarea"
+          placeholder="Paste the job description or key skills here…
+e.g. Python, machine learning, REST APIs, 3+ years experience, agile..."
+          rows="8"
+        ></textarea>
+      </div>
+
+      <!-- Step 3: Weights -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">03</span> Scoring Weights</div>
+        <div class="weights-row">
+          <div class="weight-ctrl">
+            <label>TF-IDF Keyword</label>
+            <div class="slider-row">
+              <input type="range" id="tfidfWeight" min="0" max="100" value="40" oninput="syncWeights(this,'sbert')" />
+              <span class="weight-val" id="tfidfVal">40%</span>
+            </div>
+          </div>
+          <div class="weight-ctrl">
+            <label>S-BERT</label>
+            <div class="slider-row">
+              <input type="range" id="sbertWeight" min="0" max="100" value="60" oninput="syncWeights(this,'tfidf')" />
+              <span class="weight-val" id="sbertVal">60%</span>
+            </div>
+          </div>
+        </div>
+        <p class="weight-note">Weights auto-balance to 100%</p>
+      </div>
+
+      <button class="analyze-btn" id="analyzeBtn" onclick="runAnalysis()">
+        <span class="btn-label">Analyze Resumes</span>
+        <span class="btn-icon">→</span>
+      </button>
+
+    </section>
+
+    <!-- Right Panel: Results -->
+    <section class="panel panel-results" id="resultsPanel">
+      <div class="results-header">
+        <h2 class="results-title">Screening Results</h2>
+        <span class="results-badge" id="resultsBadge" hidden></span>
+      </div>
+
+      <!-- Placeholder -->
+      <div class="placeholder" id="placeholder">
+        <div class="placeholder-icon">🔍</div>
+        <p>Upload resumes and paste a job description,<br/>then click <strong>Analyze</strong> to see ranked candidates.</p>
+      </div>
+
+      <!-- Loading -->
+      <div class="loader-wrap" id="loaderWrap" hidden>
+        <div class="loader-ring"></div>
+        <p class="loader-text">Extracting text &amp; computing similarity…</p>
+      </div>
+
+      <!-- Error -->
+      <div class="error-box" id="errorBox" hidden></div>
+
+      <!-- Results Table -->
+      <div class="table-wrap" id="tableWrap" hidden>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Resume</th>
+              <th>TF-IDF</th>
+              <th>S-BERT</th>
+              <th>Score</th>
+              <th>Keywords</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend" id="legend" hidden>
+        <span class="legend-item top3">Top 3 Candidates</span>
+        <span class="legend-item avg">Others</span>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="site-footer">
+    Built with Flask · scikit-learn · S-BERT (sentence-transformers)
+  </footer>
+
+  <script src="/static/main.js"></script>
+</body>
+</html>

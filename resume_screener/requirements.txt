@@ -1,0 +1,7 @@
+flask>=3.0
+pdfplumber>=0.11
+scikit-learn>=1.4
+sentence-transformers>=2.7
+numpy>=1.26
+pandas>=2.2
+werkzeug>=3.0
